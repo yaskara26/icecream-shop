@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import CustomersService from "../services/CustomersService";
 import ApplicationError from "../errors/ApplicationError";
+import { error } from "console";
 
 export async function createCustomer(request: Request, response: Response): Promise<Response> {
   const { name, cpf, email, telephone, birthday } = request.body;
@@ -11,11 +12,14 @@ export async function createCustomer(request: Request, response: Response): Prom
     const customer = await customersService.create({ name, cpf, email, telephone, birthday: new Date(birthday) });
 
     return response.json(customer);
-  } catch (err) {
+  } catch (err: Error) {
     let message = "Unknow Error.";
     if (err instanceof ApplicationError) {
       message = err.message;
     }
+
+    console.error(err.stack);
+
     return response.json({ error: message });
   }
 }

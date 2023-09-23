@@ -12,49 +12,58 @@ class DBCustomersRepository implements ICustomersRepository {
   }
 
   async create(customerDTO: CustomerDTO): Promise<CustomerDTO> {
-    let customer = await this.repository.create(customerDTO);
+    const customer = await this.repository.create(customerDTO);
 
-    customer = await this.repository.save(customer);
+    const { id, name, cpf, email, telephone, birthday } = await this.repository.save(customer);
 
-    return Object.assign(new CustomerDTO(), customer);
+    return Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday });
   }
 
-  async findById(id: string): Promise<CustomerDTO | null> {
-    const customer = await this.repository.findOne({ id });
+  async findById(customerId: string): Promise<CustomerDTO | null> {
+    const customer = await this.repository.findOne({ id: customerId });
 
-    return customer ? Object.assign(new CustomerDTO(), customer) : null;
+    if (customer) {
+      const { id, name, cpf, email, telephone, birthday } = customer;
+
+      return Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday });
+    }
+
+    return null;
   }
 
-  async findByCpf(cpf: string): Promise<CustomerDTO | null> {
-    const customer = await this.repository.findOne({ cpf });
+  async findByCpf(customerCpf: string): Promise<CustomerDTO | null> {
+    const customer = await this.repository.findOne({ cpf: customerCpf });
 
-    return customer ? Object.assign(new CustomerDTO(), customer) : null;
+    if (customer) {
+      const { id, name, cpf, email, telephone, birthday } = customer;
+
+      return Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday });
+    }
+
+    return null;
   }
 
   async update(customerDTO: CustomerDTO): Promise<CustomerDTO | null> {
-    // const customer = await this.repository.findOneBy({ id: customerDTO.id });
-
-    // customer.cpf = '';
-
-    // Object.assign(customer, customerDTO)
-
     await this.repository.update({ id: customerDTO.id }, customerDTO);
 
-    const customer = await this.repository.findOne({ id: customerDTO.id });
+    const { id, name, cpf, email, telephone, birthday } = await this.repository.findOne({ id: customerDTO.id });
 
-    return customer ? Object.assign(new CustomerDTO(), customer) : null;
+    return id ? Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday }) : null;
   }
 
-  async remove(id: string): Promise<CustomerDTO | null> {
-    const customer = await this.repository.findOne({ id });
+  async remove(customerId: string): Promise<CustomerDTO | null> {
+    const customer = await this.repository.findOne({ id: customerId });
+    const { id, name, cpf, email, telephone, birthday } = customer;
 
     await this.repository.remove(customer);
 
-    return customer ? Object.assign(new CustomerDTO(), customer) : null;
+    return id ? Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday }) : null;
   }
 
   async list(): Promise<CustomerDTO[]> {
-    return await this.repository.find();
+    const customers = await this.repository.find();
+
+    return customers.map(({ id, name, cpf, email, telephone, birthday }) => Object.assign(new CustomerDTO(), { id, name, cpf, email, telephone, birthday }));
   }
 }
 
