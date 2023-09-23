@@ -20,9 +20,15 @@ class DBEmployeesRepository implements IEmployeesRepository {
   }
 
   async findById(employeeId: string): Promise<EmployeeDTO | null> {
-    const { id, name, cpf, email, telephone, birthday } = await this.repository.findOne({ id: employeeId });
+    const employee = await this.repository.findOne({ id: employeeId });
 
-    return id ? Object.assign(new EmployeeDTO(), { id, name, cpf, email, telephone, birthday }) : null;
+    if (employee) {
+      const { id, name, cpf, email, telephone, birthday } = employee;
+
+      return Object.assign(new EmployeeDTO(), { id, name, cpf, email, telephone, birthday });
+    }
+
+    return null;
   }
 
   async findByCpf(employeeCpf: string): Promise<EmployeeDTO | null> {

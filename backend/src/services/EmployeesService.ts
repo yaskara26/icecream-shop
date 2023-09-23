@@ -22,7 +22,13 @@ class EmployeesService {
   }
 
   async find(id: string): Promise<EmployeeDTO> {
-    return await this.repository.findById(id);
+    const employee = await this.repository.findById(id);
+
+    if (!employee) {
+      throw new DoesNotExistsError("employee does not exists!")
+    }
+
+    return employee;
   }
 
   async update(employeeDTO: EmployeeDTO): Promise<EmployeeDTO> {
